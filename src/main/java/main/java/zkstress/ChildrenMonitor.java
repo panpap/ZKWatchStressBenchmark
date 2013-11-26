@@ -38,7 +38,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         this.znode = znode;
         this.chainedWatcher = chainedWatcher;
         this.listener = listener;
-        this.LastEvent = System.nanoTime();
+        this.LastEvent = System.currentTimeMillis();
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
         zk.getChildren(znode, true, this, null);
@@ -149,9 +149,10 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 	public void processResult(int rc, String path, Object ctx,
 			List<String> children) {
 		long now = System.currentTimeMillis();
-		ZkWatchStress._measurements.measure("RespTime", (int)((now-this.LastEvent)/1000));
+		ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
+		ZkWatchStress.opcount++;
 		this.LastEvent = now;
-		System.out.println("New Data: "+  children.toString());
+		System.out.println("Global Data: "+  children.toString());
 		//set again
 		boolean exists;
         switch (rc) {

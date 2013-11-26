@@ -23,12 +23,13 @@ import org.apache.zookeeper.KeeperException;
 
 public class ZkWatchStress {
 
-private int ThreadNo=0;
+private static int ThreadNo=0;
 private String Znode= null;
 private String ZkServer;
-private long StartTime;
-private long TotalTime;
+private static long StartTime;
+private static long TotalTime;
 static Measurements _measurements;
+static int opcount=0;
 
 public ZkWatchStress(String ip,String node, int threads, int time){
 	
@@ -59,19 +60,20 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     	System.out.println("Running: "+ i);
         executorPool.execute(new Executor(this.ZkServer, this.Znode));
     }
-    this.StartTime = System.currentTimeMillis();
+    StartTime = System.currentTimeMillis();
     
-    while ( (System.currentTimeMillis() - this.StartTime)/1000 < this.TotalTime ){
+    while ( ((System.currentTimeMillis() - StartTime)/1000) < TotalTime ){
     	//Thread.sleep(5000); 
     }
     //shut down the pool
     
     executorPool.shutdown();
     //shut down the monitor thread
-    Thread.sleep(2000);
+    //Thread.sleep(2000);
     monitor.shutdown();
 
     System.out.println("Finished all threads");
+    return;
 
 }
 
@@ -91,7 +93,7 @@ public class RejectedExecutionHandlerImpl implements RejectedExecutionHandler {
  * loaded from conf.
  * @throws IOException Either failed to write to output stream or failed to close it.
  */
-private static void exportMeasurements(int opcount, long runtime)
+private static void exportMeasurements()
 		throws IOException
 {
 	MeasurementsExporter exporter = null;
@@ -114,9 +116,10 @@ private static void exportMeasurements(int opcount, long runtime)
 
 		exporter = new TextMeasurementsExporter(out);
 
-		exporter.write("OVERALL", "RunTime(ms)", runtime);
-		double throughput = 1000.0 * ((double) opcount) / ((double) runtime);
-		exporter.write("OVERALL", "Throughput(ops/sec)", throughput);
+		exporter.write("OVERALL", "RunTime(ms)", (System.currentTimeMillis()- StartTime));
+		double throughput = 1000.0 * ((double) opcount) / ((double) TotalTime);
+		exporter.write("OVERALL", "Throughput(watch notifications/sec)", throughput);
+		exporter.write("OVERALL", "Threads No", ThreadNo);
 
 		Measurements.getMeasurements().exportMeasurements(exporter);
 	} finally
@@ -126,6 +129,7 @@ private static void exportMeasurements(int opcount, long runtime)
 			exporter.close();
 		}
 	}
+	return;
 }
 
 
@@ -157,11 +161,12 @@ public static void main(String [] args ){
 	int time = Integer.parseInt(res.getString("time"));
 	
 	
-	long now = System.nanoTime();
-	_measurements.measure("RespTime",(int)(now/1000));
-	_measurements.reportReturnCode("RespTime", 404);
+	
 	String root = new String("/");
 	ZkWatchStress myStres = new ZkWatchStress(ZKServ,root, threads,time);
+	long now = System.currentTimeMillis();
+	_measurements.measure("RespTime",(int)now);
+	
 	try {
 		myStres.RunAll();
 	} catch (KeeperException e) {
@@ -172,16 +177,17 @@ public static void main(String [] args ){
 		System.out.println("InterruptedException - thread - Sleep!");
 	}
 	
+
 	try
 	{
-		exportMeasurements(10, System.nanoTime());
+		exportMeasurements();
 	} catch (IOException e)
 	{
 		System.err.println("Could not export measurements, error: " + e.getMessage());
 		e.printStackTrace();
 		System.exit(-1);
 	}
-	
+	System.exit(0);
 	
 }
 
