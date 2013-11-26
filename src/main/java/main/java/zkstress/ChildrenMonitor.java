@@ -5,18 +5,15 @@ package main.java.zkstress;
  * A simple class that monitors the data and existence of a ZooKeeper
  * node. It uses asynchronous ZooKeeper APIs.
  */
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.zookeeper.AsyncCallback;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.AsyncCallback.StatCallback;
-import org.apache.zookeeper.KeeperException.Code;
-import org.apache.zookeeper.data.Stat;
 
 public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback {
 
@@ -29,6 +26,8 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
     boolean dead;
 
     ChildrenMonitorListener listener;
+    
+    long LastEvent;
 
     List<String> prevData;
     
@@ -39,6 +38,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         this.znode = znode;
         this.chainedWatcher = chainedWatcher;
         this.listener = listener;
+        this.LastEvent = System.nanoTime();
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
         zk.getChildren(znode, true, this, null);
@@ -148,6 +148,9 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 	@Override
 	public void processResult(int rc, String path, Object ctx,
 			List<String> children) {
+		long now = System.currentTimeMillis();
+		ZkWatchStress._measurements.measure("RespTime", (int)((now-this.LastEvent)/1000));
+		this.LastEvent = now;
 		System.out.println("New Data: "+  children.toString());
 		//set again
 		boolean exists;

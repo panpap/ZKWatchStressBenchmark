@@ -35,7 +35,7 @@ public class MyMonitorThread implements Runnable
                         this.executor.isShutdown(),
                         this.executor.isTerminated()));
                 try {
-                    Thread.sleep(seconds*1000);
+                    Thread.sleep(seconds*5000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

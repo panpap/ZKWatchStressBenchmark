@@ -19,12 +19,11 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
-public class Executor
-    implements Watcher, Runnable, ChildrenMonitor.ChildrenMonitorListener
-{
-    String znode;
+public class Executor implements Watcher, Runnable, ChildrenMonitor.ChildrenMonitorListener{
+    
+	String znode;
 
-//    DataMonitor dm;
+//  DataMonitor dm;
     
     ChildrenMonitor chm;
     
