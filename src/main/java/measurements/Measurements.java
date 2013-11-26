@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
 
+import main.java.zkstress.ZkWatchStress;
+
 /**
  * Collects latency measurements, and reports them when requested.
  * 
@@ -79,6 +81,7 @@ public class Measurements
 		try
 		{
 			data.get(operation).measure(latency);
+			ZkWatchStress.opcount++;
 		}
 		catch (java.lang.ArrayIndexOutOfBoundsException e)
 		{

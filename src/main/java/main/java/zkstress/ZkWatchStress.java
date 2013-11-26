@@ -29,10 +29,10 @@ private String ZkServer;
 private static long StartTime;
 private static long TotalTime;
 static Measurements _measurements;
-static int opcount=0;
+public static int opcount;
 
 public ZkWatchStress(String ip,String node, int threads, int time){
-	
+	opcount=0;
 	this.ThreadNo = threads;
 	this.Znode = node;
 	this.ZkServer = ip;
@@ -117,7 +117,7 @@ private static void exportMeasurements()
 		exporter = new TextMeasurementsExporter(out);
 
 		exporter.write("OVERALL", "RunTime(ms)", (System.currentTimeMillis()- StartTime));
-		double throughput = 1000.0 * ((double) opcount) / ((double) TotalTime);
+		double throughput = ((double) opcount) / ((double) TotalTime);
 		exporter.write("OVERALL", "Throughput(watch notifications/sec)", throughput);
 		exporter.write("OVERALL", "Threads No", ThreadNo);
 
