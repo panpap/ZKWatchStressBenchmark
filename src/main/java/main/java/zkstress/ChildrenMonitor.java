@@ -150,8 +150,10 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 			List<String> children) {
 		
 		/* Do NOT continue Writing after shutdown!!!! */
-		if(ZkWatchStress.executorPool.isTerminating() || ZkWatchStress.executorPool.isTerminated())
-			Thread.currentThread().stop();	
+		if(ZkWatchStress.executorPool.isTerminating() || ZkWatchStress.executorPool.isTerminated()){
+			Thread.currentThread().stop();
+			return;
+		}
 		/*Just to Check Progress */
 		System.out.print(".");
 		long now = System.currentTimeMillis();
