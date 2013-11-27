@@ -96,54 +96,6 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
             chainedWatcher.process(event);
         }
     }
-    /*
-    public void processResult(int rc, String path, Object ctx, Stat stat) {
-    	System.out.println("ProcessResult: "+ path);
-        boolean exists;
-        switch (rc) {
-        case Code.Ok:
-            exists = true;
-            break;
-        case Code.NoNode:
-            exists = false;
-            break;
-        case Code.SessionExpired:
-        case Code.NoAuth:
-            dead = true;
-            listener.closing(rc);
-            return;
-        default:
-            // Retry errors
-            zk.exists(znode, true, this, null);
-            return;
-        }
-
-        byte b[] = null;
-        if (exists) {
-            try {
-                b = zk.getData(znode, false, null);
-            } catch (Exception e) {
-                // We don't need to worry about recovering now. The watch
-                // callbacks will kick off any exception handling
-                e.printStackTrace();
-                return;
-            }
-        }
-        if ((b == null && b != prevData)
-                || (b != null && !Arrays.equals(prevData, b))) {
-            listener.exists(b);
-            prevData = b;
-            String ringstate = null;
-			try {
-				ringstate = new String(prevData, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            System.out.println("New Data: "+  ringstate);
-
-        }
-    }*/
 
 	@Override
 	public void processResult(int rc, String path, Object ctx,
