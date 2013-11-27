@@ -8,13 +8,14 @@ public class SyncBenchmarkClient extends BenchmarkClient {
 
 	long StartTime;
 	private boolean done;
+	static int TimeToLast;
 
 	private static final Logger LOG = Logger.getLogger(SyncBenchmarkClient.class);
 
 	
 	public SyncBenchmarkClient(String host, String namespace,
-			int attempts, int id) throws IOException {
-		super(host, namespace, attempts, id);
+			int time, int id) throws IOException {
+		super(host, namespace, time, id);
 	}
 	
 	@Override
@@ -30,10 +31,11 @@ public class SyncBenchmarkClient extends BenchmarkClient {
 	}
 		
 	protected void submitWrapped(int n) throws Exception {
+		TimeToLast = n;
 		done = false;
 		byte data[];
 		long i = 0; 
-		while((System.currentTimeMillis() - StartTime)/1000 <n ) {
+		while(((System.currentTimeMillis() - StartTime)/1000) <TimeToLast ) {
 			data = new String("pgaref AcaZoo DATAAAAA"+i++).getBytes();
 			_client.create().forPath(_path + "/" + _count, data);
 			_count++;

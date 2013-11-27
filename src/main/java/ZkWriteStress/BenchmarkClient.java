@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 
+import main.java.zkstress.ZkWatchStress;
+
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.data.Stat;
 
@@ -20,7 +22,7 @@ public abstract class BenchmarkClient implements Runnable {
 	protected int _id;
 	protected int _count;
 	protected int _countTime;
-	
+	protected int _time;
 	protected int _highestN;
 	protected int _highestDeleted;
 	
@@ -30,7 +32,8 @@ public abstract class BenchmarkClient implements Runnable {
 
 
 	public BenchmarkClient( String host, String namespace,
-			int attempts, int id) throws IOException {
+			int time, int id) throws IOException {
+		_time = time;
 		_host = host;
 		_client = CuratorFrameworkFactory.builder()
 			.connectString(_host).namespace(namespace)
@@ -62,7 +65,7 @@ public abstract class BenchmarkClient implements Runnable {
 		}
 		
 		//run in seconds.
-		submit(1);
+		submit(_time);
 		try {
 			deleteChildren();
 		} catch (Exception e) {
@@ -70,6 +73,7 @@ public abstract class BenchmarkClient implements Runnable {
 		}
 		
 		System.out.println("Zk CLient Done!");
+		ZkWatchStress.done = true;
 		return;
 		
 	}

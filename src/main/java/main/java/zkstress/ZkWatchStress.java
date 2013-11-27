@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -21,11 +22,14 @@ import net.sourceforge.argparse4j.inf.Namespace;
 
 import org.apache.zookeeper.KeeperException;
 
+import ZkWriteStress.SyncBenchmarkClient;
+
 public class ZkWatchStress {
 
 private static int ThreadNo=0;
 private String Znode= null;
 private String ZkServer;
+public static boolean done = false;
 private static long StartTime;
 private static long TotalTime;
 static Measurements _measurements;
@@ -33,10 +37,10 @@ public static int opcount;
 
 public ZkWatchStress(String ip,String node, int threads, int time){
 	opcount=0;
-	this.ThreadNo = threads;
+	ThreadNo = threads;
 	this.Znode = node;
 	this.ZkServer = ip;
-	this.TotalTime = time;
+	TotalTime = time;
 	_measurements = Measurements.getMeasurements();
 }
 	
@@ -46,31 +50,31 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     //Get the ThreadFactory implementation to use
     ThreadFactory threadFactory = Executors.defaultThreadFactory();
     //creating the ThreadPoolExecutor
-    ThreadPoolExecutor executorPool = new ThreadPoolExecutor(this.ThreadNo/2, this.ThreadNo, 10,
-				TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(8),
+    ThreadPoolExecutor executorPool = new ThreadPoolExecutor(ThreadNo, ZkWatchStress.ThreadNo, 10,
+				TimeUnit.SECONDS, new  LinkedBlockingQueue<Runnable>(),
 				threadFactory, rejectionHandler);
     //start the monitoring thread
-    
+   /* 
     MyMonitorThread monitor = new MyMonitorThread(executorPool, 3);
     Thread monitorThread = new Thread(monitor);
-    monitorThread.start();
+    monitorThread.start();*/
     
     //submit work to the thread pool
     for(int i=0; i<this.ThreadNo; i++){
-    	System.out.println("Running: "+ i);
         executorPool.execute(new Executor(this.ZkServer, this.Znode));
     }
-    StartTime = System.currentTimeMillis();
+    System.out.println("All Threads Started!");
     
-    while ( ((System.currentTimeMillis() - StartTime)/1000) < TotalTime ){
-    	//Thread.sleep(5000); 
+    StartTime = System.currentTimeMillis();
+    while ( (((System.currentTimeMillis() - StartTime)/1000) < TotalTime) && !done ){
+    	Thread.sleep(1000); 
     }
     //shut down the pool
     
     executorPool.shutdown();
     //shut down the monitor thread
     //Thread.sleep(2000);
-    monitor.shutdown();
+    //monitor.shutdown();
 
     System.out.println("Finished all threads");
     return;
@@ -134,6 +138,7 @@ private static void exportMeasurements()
 
 
 public static void main(String [] args ){
+	Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 	
 	ArgumentParser parser = ArgumentParsers.newArgumentParser("run")
 	        .defaultHelp(true);
@@ -162,10 +167,27 @@ public static void main(String [] args ){
 	
 	
 	
-	String root = new String("/");
+	
+	
+	/*
+	 * Now Start Watcher
+	 * 
+	 */
+	String root = new String("/zkTest/client750");
 	ZkWatchStress myStres = new ZkWatchStress(ZKServ,root, threads,time);
-	long now = System.currentTimeMillis();
-	_measurements.measure("RespTime",(int)now);
+	
+	/*
+	 * First Start Stresser and then Watchers
+	 * 
+	 */
+	
+	try {
+		Thread tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
+		tmp.setPriority(Thread.MAX_PRIORITY);
+		tmp.start();
+	} catch (IOException e) {
+		System.out.println("ZK currator error "+ e);
+	}
 	
 	try {
 		myStres.RunAll();
@@ -176,7 +198,7 @@ public static void main(String [] args ){
 	} catch(InterruptedException e){
 		System.out.println("InterruptedException - thread - Sleep!");
 	}
-	
+	System.out.println("Watcher Threads done! ");
 
 	try
 	{
@@ -187,6 +209,7 @@ public static void main(String [] args ){
 		e.printStackTrace();
 		System.exit(-1);
 	}
+	System.out.println("All done!");
 	System.exit(0);
 	
 }

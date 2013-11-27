@@ -149,7 +149,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 	public void processResult(int rc, String path, Object ctx,
 			List<String> children) {
 		long now = System.currentTimeMillis();
-		if(this.LastEvent != -1)
+		if((this.LastEvent != -1))
 			ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
 		this.LastEvent = now;
 		
