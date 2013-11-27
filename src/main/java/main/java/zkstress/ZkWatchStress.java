@@ -195,7 +195,7 @@ public static void main(String [] args ){
 	} catch (KeeperException e) {
 		System.out.println("Zk Exception Running multiple Threads!");
 	} catch (IOException e) {
-		System.out.println("IO Exception Runnign multiple Threads!"+e);
+		System.out.println("IO Exception Runnign multiple Threads!"+e.getMessage());
 	} catch(InterruptedException e){
 		System.out.println("InterruptedException - thread - Sleep!");
 	}
