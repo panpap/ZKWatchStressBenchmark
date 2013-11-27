@@ -74,6 +74,7 @@ public abstract class BenchmarkClient implements Runnable {
 		
 		System.out.println("Zk CLient Done!");
 		ZkWatchStress.done = true;
+		ZkWatchStress.executorPool.shutdownNow();
 		return;
 		
 	}
