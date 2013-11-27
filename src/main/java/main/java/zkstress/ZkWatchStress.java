@@ -52,7 +52,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     //Get the ThreadFactory implementation to use
     ThreadFactory threadFactory = Executors.defaultThreadFactory();
     //creating the ThreadPoolExecutor
-     executorPool = new ThreadPoolExecutor(ThreadNo, ZkWatchStress.ThreadNo, 10,
+     executorPool = new ThreadPoolExecutor (ThreadNo/2, ZkWatchStress.ThreadNo, 10,
 				TimeUnit.SECONDS, new  LinkedBlockingQueue<Runnable>(),
 				threadFactory, rejectionHandler);
     //start the monitoring thread
