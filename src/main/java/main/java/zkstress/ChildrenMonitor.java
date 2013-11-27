@@ -148,13 +148,19 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 	@Override
 	public void processResult(int rc, String path, Object ctx,
 			List<String> children) {
+		
+		/* Do NOT continue Writing after shutdown!!!! */
+		if(ZkWatchStress.executorPool.isTerminating() || ZkWatchStress.executorPool.isTerminated())
+			Thread.currentThread().stop();	
+		/*Just to Check Progress */
+		System.out.print(".");
 		long now = System.currentTimeMillis();
 		if((this.LastEvent != -1))
 			ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
 		this.LastEvent = now;
 		
 		//System.out.println("New Watcher Data: "+  children.toString());
-		System.out.print(".");
+		
 		
 		//set again
 		boolean exists;

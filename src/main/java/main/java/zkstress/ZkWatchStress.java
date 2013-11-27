@@ -34,6 +34,7 @@ private static long StartTime;
 private static long TotalTime;
 static Measurements _measurements;
 public static int opcount;
+public static ThreadPoolExecutor executorPool;
 
 public ZkWatchStress(String ip,String node, int threads, int time){
 	opcount=0;
@@ -50,7 +51,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     //Get the ThreadFactory implementation to use
     ThreadFactory threadFactory = Executors.defaultThreadFactory();
     //creating the ThreadPoolExecutor
-    ThreadPoolExecutor executorPool = new ThreadPoolExecutor(ThreadNo, ZkWatchStress.ThreadNo, 10,
+     executorPool = new ThreadPoolExecutor(ThreadNo, ZkWatchStress.ThreadNo, 10,
 				TimeUnit.SECONDS, new  LinkedBlockingQueue<Runnable>(),
 				threadFactory, rejectionHandler);
     //start the monitoring thread
