@@ -35,6 +35,7 @@ private static long TotalTime;
 static Measurements _measurements;
 public static int opcount;
 public static ThreadPoolExecutor executorPool;
+private static final Object lock = new Object();
 
 public ZkWatchStress(String ip,String node, int threads, int time){
 	opcount=0;
@@ -203,7 +204,9 @@ public static void main(String [] args ){
 
 	try
 	{
-		exportMeasurements();
+		synchronized(lock){
+			exportMeasurements();
+		}
 	} catch (IOException e)
 	{
 		System.err.println("Could not export measurements, error: " + e.getMessage());
