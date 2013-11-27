@@ -67,7 +67,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     
     StartTime = System.currentTimeMillis();
     while ( (((System.currentTimeMillis() - StartTime)/1000) < TotalTime) && !done ){
-    	Thread.sleep(1000); 
+    	//Thread.sleep(1000); 
     }
     //shut down the pool
     
