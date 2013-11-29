@@ -4,8 +4,6 @@ package main.java.zkstress;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Properties;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -17,6 +15,7 @@ import measurements.Measurements;
 import measurements.MeasurementsExporter;
 import measurements.TextMeasurementsExporter;
 import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 
@@ -36,13 +35,16 @@ static Measurements _measurements;
 public static int opcount;
 public static ThreadPoolExecutor executorPool;
 private static final Object lock = new Object();
+private boolean LoadBalance;
 
-public ZkWatchStress(String ip,String node, int threads, int time){
+
+public ZkWatchStress(String ip,String node, int threads, int time, boolean lb){
 	opcount=0;
 	ThreadNo = threads;
 	this.Znode = node;
 	this.ZkServer = ip;
 	TotalTime = time;
+	this.LoadBalance = lb;
 	_measurements = Measurements.getMeasurements();
 }
 	
@@ -61,10 +63,27 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     Thread monitorThread = new Thread(monitor);
     monitorThread.start();*/
     
-    //submit work to the thread pool
-    for(int i=0; i<this.ThreadNo; i++){
-        executorPool.execute(new Executor(this.ZkServer, this.Znode));
+    
+    if(this.LoadBalance){
+    	//for Load balanced
+    	for(int i=0; i<(ThreadNo/3); i++){	
+            executorPool.execute(new Executor("109.231.85.83", this.Znode));
+            executorPool.execute(new Executor("109.231.85.84", this.Znode));
+            executorPool.execute(new Executor("109.231.85.43", this.Znode));
+    	}
+    	
+    	
     }
+    else{
+    	//submit work to the thread pool Not Balanced
+        for(int i=0; i<this.ThreadNo; i++){
+            executorPool.execute(new Executor(this.ZkServer, this.Znode));
+        }
+    }
+    
+    
+    
+    
     System.out.println("All Threads Started!");
     
     StartTime = System.currentTimeMillis();
@@ -155,7 +174,10 @@ public static void main(String [] args ){
 	    parser.addArgument("--time")
         .setDefault("time","10")
         //.action(Arguments.append())
-        .help("-time <Seconds>");
+        .help("--time <Seconds>");
+	    parser.addArgument("--LB")
+	    .action(Arguments.storeTrue())
+	    .help("--LB for LoadBalancing");
 	    parser.printHelp();
 	
 	
@@ -166,17 +188,14 @@ public static void main(String [] args ){
 	String ZKServ = res.getString("host");
 	int threads = Integer.parseInt(res.getString("threads"));
 	int time = Integer.parseInt(res.getString("time"));
-	
-	
-	
-	
+	boolean gotlb = res.getBoolean("LB");
 	
 	/*
 	 * Now Start Watcher
 	 * 
 	 */
 	String root = new String("/zkTest/client750");
-	ZkWatchStress myStres = new ZkWatchStress(ZKServ,root, threads,time);
+	ZkWatchStress myStres = new ZkWatchStress(ZKServ,root, threads,time, gotlb);
 	
 	/*
 	 * First Start Stresser and then Watchers
