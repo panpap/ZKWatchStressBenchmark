@@ -40,7 +40,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         this.LastEvent = -1;
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
-        System.out.println("Watch State: "+ zk.getState());
+        
         zk.getChildren(znode, true, this, null);
     }
 
@@ -64,7 +64,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 
     public void process(WatchedEvent event) {
         String path = event.getPath();
-        //System.out.println("Event Type: " + event.getType()  + " Path: "+ path  + "State: "+ event.getState());
+        System.out.println("Event Type: " + event.getType()  + " Path: "+ path  + "State: "+ event.getState() + "ZK State: "+ zk.getState());
         if (event.getType() == Event.EventType.None) {
             // We are are being told that the state of the
             // connection has changed
