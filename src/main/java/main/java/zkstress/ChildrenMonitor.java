@@ -112,7 +112,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 			return;
 		}
 		/*Just to Check Progress */
-	//	System.out.print(".");
+		System.out.print(".");
 		long now = System.currentTimeMillis();
 		if((this.LastEvent != -1))
 			ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
@@ -143,13 +143,13 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         List<String> b = null;
         if (exists) {
             try {
-                b = zk.getChildren(znode, true);
+                b = zk.getChildren(znode, false, null);
             } catch (Exception e) {
                 // We don't need to worry about recovering now. The watch
                 // callbacks will kick off any exception handling
                // e.printStackTrace();
-               System.out.println("\n ZK watch Connection Lost!");
-                return;
+                System.out.println("Zk - Watch Connection error!");
+            	return;
             }
         }
         if ((b == null && b != prevData)

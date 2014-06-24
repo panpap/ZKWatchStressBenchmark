@@ -40,7 +40,7 @@ public class SyncBenchmarkClient extends BenchmarkClient {
 		while(true){//((System.currentTimeMillis() - StartTime)/1000) <=TimeToLast ) {
 			data = new String("pgaref AcaZoo DATAAAAA"+i++).getBytes();
 			_client.create().forPath(_path + "/" + _count, data);
-			//System.out.print("~");
+			System.out.print("~");
 			_count++;
 
 			if (done)
