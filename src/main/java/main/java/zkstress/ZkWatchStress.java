@@ -227,8 +227,19 @@ public static void main(String [] args ){
 	}
 	System.out.println("Watcher Threads done! ");
 
+	
+	/*
+	 * Force shutdown!
+	 */
 	tmp.stop();
 	executorPool.shutdown();
+	
+	try {
+		Thread.sleep(2000);
+	} catch (InterruptedException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
 	
 	try
 	{
