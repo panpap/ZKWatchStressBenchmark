@@ -50,10 +50,6 @@ public abstract class BenchmarkClient implements Runnable {
 		if (!_client.isStarted())
 			_client.start();		
 		
-		if (!_client.isStarted()){
-			System.out.println("Client could not connect!! ");
-			return;
-		}
 		_count = 0;
 		_countTime = 0;
 		
@@ -76,7 +72,7 @@ public abstract class BenchmarkClient implements Runnable {
 			System.out.println("Could not delete Children");
 		}
 		
-		System.out.println("Zk CLient Done!");
+		System.out.println("Zk -> Write CLient Done!");
 		ZkWatchStress.done = true;
 		ZkWatchStress.executorPool.shutdownNow();
 		return;
