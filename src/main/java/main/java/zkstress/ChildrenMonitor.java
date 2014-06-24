@@ -143,11 +143,12 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         List<String> b = null;
         if (exists) {
             try {
-                b = zk.getChildren(znode, false, null);
+                b = zk.getChildren(znode, true);
             } catch (Exception e) {
                 // We don't need to worry about recovering now. The watch
                 // callbacks will kick off any exception handling
-                e.printStackTrace();
+               // e.printStackTrace();
+               System.out.println("ZK watch Connection Lost!");
                 return;
             }
         }
