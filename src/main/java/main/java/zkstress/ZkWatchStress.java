@@ -190,7 +190,6 @@ public static void main(String [] args ){
 	int time = Integer.parseInt(res.getString("time"));
 	boolean gotlb = res.getBoolean("LB");
 	
-	System.out.println("HOST NAME: "+ ZKServ);
 	
 	/*
 	 * Now Start Watcher
