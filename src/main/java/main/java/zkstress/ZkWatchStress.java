@@ -91,7 +91,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     StartTime = System.currentTimeMillis();
     
     while ( (((System.currentTimeMillis() - StartTime)/1000) < TotalTime) && !done ){
-    	Thread.sleep(100); 
+    	//Thread.sleep(100); 
     	
     }
     //shut down the pool
@@ -102,6 +102,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     monitor.shutdown();
 
     System.out.println("Finished all threads");
+    this.done= true;
     return;
 
 }
@@ -226,6 +227,9 @@ public static void main(String [] args ){
 	}
 	System.out.println("Watcher Threads done! ");
 
+	
+	while(!myStres.done)
+		continue;
 	try
 	{
 		synchronized(lock){
