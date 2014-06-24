@@ -36,11 +36,11 @@ public class SyncBenchmarkClient extends BenchmarkClient {
 		done = false;
 		byte data[];
 		long i = 0; 
-		System.out.print("~");
+
 		while(((System.currentTimeMillis() - StartTime)/1000) <TimeToLast ) {
 			data = new String("pgaref AcaZoo DATAAAAA"+i++).getBytes();
 			_client.create().forPath(_path + "/" + _count, data);
-			System.out.print("~");
+			//System.out.print("~");
 			_count++;
 
 			if (done)

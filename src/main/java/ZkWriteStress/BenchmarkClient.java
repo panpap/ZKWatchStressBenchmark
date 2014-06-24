@@ -20,7 +20,7 @@ public abstract class BenchmarkClient implements Runnable {
 	protected CuratorFramework _client; // the actual client
 	protected String _path;
 	protected int _id;
-	protected int _count;
+	protected long _count;
 	protected int _countTime;
 	protected int _time;
 	protected int _highestN;
@@ -104,7 +104,7 @@ public abstract class BenchmarkClient implements Runnable {
 		return _countTime;
 	}
 	
-	int getOpsCount(){
+	long getOpsCount(){
 		return _count;
 	}
 	
