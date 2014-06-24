@@ -122,7 +122,7 @@ public class RejectedExecutionHandlerImpl implements RejectedExecutionHandler {
  * loaded from conf.
  * @throws IOException Either failed to write to output stream or failed to close it.
  */
-private static void exportMeasurements()
+private static synchronized void exportMeasurements()
 		throws IOException
 {
 	MeasurementsExporter exporter = null;
