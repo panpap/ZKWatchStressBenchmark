@@ -40,6 +40,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         this.LastEvent = -1;
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
+        System.out.println("Watch State: "+ zk.getState());
         zk.getChildren(znode, true, this, null);
     }
 
