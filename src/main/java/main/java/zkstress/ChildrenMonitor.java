@@ -98,8 +98,12 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
     }
 
 	@Override
-	public void processResult(int rc, String path, Object ctx,
-			List<String> children) {
+	public void processResult(int rc, String path, Object ctx, List<String> children) {
+		
+		if(!zk.getState().isAlive()){
+        	System.out.println("Zookeeper Connection is not Alive!");
+        	return;
+        }
 		
 		/* Do NOT continue Writing after shutdown!!!! */
 		if(ZkWatchStress.executorPool.isTerminating() || ZkWatchStress.executorPool.isTerminated()){

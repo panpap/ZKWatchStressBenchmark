@@ -50,6 +50,10 @@ public abstract class BenchmarkClient implements Runnable {
 		if (!_client.isStarted())
 			_client.start();		
 		
+		if (!_client.isStarted()){
+			System.out.println("Client could not connect!! ");
+			return;
+		}
 		_count = 0;
 		_countTime = 0;
 		

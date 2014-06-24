@@ -33,10 +33,7 @@ public class Executor implements Watcher, Runnable, ChildrenMonitor.ChildrenMoni
     
     public Executor(String hostPort, String znode) throws KeeperException, IOException, InterruptedException {
         zk = new ZooKeeper(hostPort, 3000, this);
-        if(!zk.getState().isAlive()){
-        	System.out.println("Zookeeper Connection is not Alife!");
-        	return;
-        }
+        
 //        dm = new DataMonitor(zk, znode, null, this);
         chm = new ChildrenMonitor(zk, znode, null, this);
     }
