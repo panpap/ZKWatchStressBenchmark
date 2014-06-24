@@ -32,7 +32,7 @@ public class Executor implements Watcher, Runnable, ChildrenMonitor.ChildrenMoni
     Process child;
     
     public Executor(String hostPort, String znode) throws KeeperException, IOException, InterruptedException {
-        zk = new ZooKeeper(hostPort, 3000, this);
+        zk = new ZooKeeper(hostPort, 30000, this);
 //        dm = new DataMonitor(zk, znode, null, this);
         chm = new ChildrenMonitor(zk, znode, null, this);
     }
