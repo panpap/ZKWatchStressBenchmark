@@ -67,9 +67,9 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     if(this.LoadBalance){
     	//for Load balanced
     	for(int i=0; i<(ThreadNo/3); i++){	
-            executorPool.execute(new Executor("109.231.85.83", this.Znode));
-            executorPool.execute(new Executor("109.231.85.84", this.Znode));
-            executorPool.execute(new Executor("109.231.85.43", this.Znode));
+            executorPool.execute(new Executor("10.254.1.2", this.Znode));
+            executorPool.execute(new Executor("10.254.1.4", this.Znode));
+            executorPool.execute(new Executor("10.254.1.5", this.Znode));
     	}
     	
     	
@@ -164,7 +164,7 @@ public static void main(String [] args ){
 	ArgumentParser parser = ArgumentParsers.newArgumentParser("run")
 	        .defaultHelp(true);
 	    parser.addArgument("--host")
-	        .setDefault("host","109.231.85.43")
+	        .setDefault("host","10.254.1.2")
 	     //   .action(Arguments.append())
 	        .help("-host <IP>");
 	    parser.addArgument("--threads")
