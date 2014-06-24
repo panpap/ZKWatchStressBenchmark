@@ -207,9 +207,9 @@ public static void main(String [] args ){
 	 * First Start Stresser and then Watchers
 	 * 
 	 */
-	
+	Thread tmp =null;
 	try {
-		Thread tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
+		 tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
 		tmp.setPriority(Thread.MAX_PRIORITY);
 		tmp.start();
 	} catch (IOException e) {
@@ -227,9 +227,9 @@ public static void main(String [] args ){
 	}
 	System.out.println("Watcher Threads done! ");
 
+	tmp.stop();
+	executorPool.shutdown();
 	
-	while(!myStres.done)
-		continue;
 	try
 	{
 		synchronized(lock){
