@@ -32,8 +32,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
     List<String> prevData;
     
     
-    public ChildrenMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher,
-    		ChildrenMonitorListener listener) throws KeeperException, InterruptedException {
+    public ChildrenMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher, ChildrenMonitorListener listener) throws KeeperException, InterruptedException {
         this.zk = zk;
         this.znode = znode;
         this.chainedWatcher = chainedWatcher;
