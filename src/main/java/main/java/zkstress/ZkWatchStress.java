@@ -85,6 +85,8 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     
     
     System.out.println("All Threads Started!");
+    SyncBenchmarkClient.StartTime = System.currentTimeMillis();
+    
     
     StartTime = System.currentTimeMillis();
     while ( (((System.currentTimeMillis() - StartTime)/1000) < TotalTime) && !done ){

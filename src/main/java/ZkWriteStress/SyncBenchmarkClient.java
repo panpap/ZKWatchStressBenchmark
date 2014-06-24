@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 
 public class SyncBenchmarkClient extends BenchmarkClient {
 
-	long StartTime;
+	public static long StartTime;
 	private boolean done;
 	static int TimeToLast;
 
@@ -27,6 +27,7 @@ public class SyncBenchmarkClient extends BenchmarkClient {
 			// What can you do? for some reason
 			// com.netflix.curator.framework.api.Pathable.forPath() throws Exception
 			LOG.error("Error while submitting requests", e);
+			System.err.println("Error while submitting requests");
 		}
 	}
 		
@@ -35,9 +36,11 @@ public class SyncBenchmarkClient extends BenchmarkClient {
 		done = false;
 		byte data[];
 		long i = 0; 
+		System.out.print("~");
 		while(((System.currentTimeMillis() - StartTime)/1000) <TimeToLast ) {
 			data = new String("pgaref AcaZoo DATAAAAA"+i++).getBytes();
 			_client.create().forPath(_path + "/" + _count, data);
+			System.out.print("~");
 			_count++;
 
 			if (done)

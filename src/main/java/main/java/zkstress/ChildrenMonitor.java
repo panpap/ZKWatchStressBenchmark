@@ -64,7 +64,6 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 
     public void process(WatchedEvent event) {
         String path = event.getPath();
-        System.out.print("~");
         //System.out.println("Event Type: " + event.getType()  + " Path: "+ path  + "State: "+ event.getState() + "ZK State: "+ zk.getState());
         if (event.getType() == Event.EventType.None) {
             // We are are being told that the state of the
