@@ -58,10 +58,10 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
 				TimeUnit.SECONDS, new  LinkedBlockingQueue<Runnable>(),
 				threadFactory, rejectionHandler);
     //start the monitoring thread
-   /* 
+    
     MyMonitorThread monitor = new MyMonitorThread(executorPool, 3);
     Thread monitorThread = new Thread(monitor);
-    monitorThread.start();*/
+    monitorThread.start();
     
     
     if(this.LoadBalance){
@@ -97,7 +97,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     executorPool.shutdown();
     //shut down the monitor thread
     //Thread.sleep(2000);
-    //monitor.shutdown();
+    monitor.shutdown();
 
     System.out.println("Finished all threads");
     return;
