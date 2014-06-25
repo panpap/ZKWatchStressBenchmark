@@ -101,7 +101,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     //Thread.sleep(2000);
     monitor.shutdown();
 
-    System.out.println("Finished all threads");
+    System.out.println("Finished all Watch - threads");
     this.done= true;
     return;
 
@@ -204,17 +204,9 @@ public static void main(String [] args ){
 	ZkWatchStress myStres = new ZkWatchStress(ZKServ,root, threads,time, gotlb);
 	
 	/*
-	 * First Start Stresser and then Watchers
+	 * First Start Watchers and then Stresser!!!!!!
 	 * 
 	 */
-	Thread tmp =null;
-	try {
-		 tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
-		tmp.setPriority(Thread.MAX_PRIORITY);
-		tmp.start();
-	} catch (IOException e) {
-		System.out.println("ZK currator error "+ e);
-	}
 	
 	try {
 		myStres.RunAll();
@@ -225,8 +217,22 @@ public static void main(String [] args ){
 	} catch(InterruptedException e){
 		System.out.println("InterruptedException - thread - Sleep!");
 	}
-	System.out.println("Watcher Threads done! ");
+	System.out.println("Watcher Threads Started! ");
 
+	/*
+	 * Start Stresser!!!
+	 */
+	
+	Thread tmp =null;
+	try {
+		 tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
+		tmp.setPriority(Thread.MAX_PRIORITY);
+		tmp.start();
+	} catch (IOException e) {
+		System.out.println("ZK currator error "+ e);
+	}
+	
+	System.out.println("Stresser Done!");
 	
 	/*
 	 * Force shutdown!

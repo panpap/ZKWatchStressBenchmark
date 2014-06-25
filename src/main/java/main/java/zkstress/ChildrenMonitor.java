@@ -114,8 +114,10 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 		/*Just to Check Progress */
 		System.out.print(".");
 		long now = System.currentTimeMillis();
-		if((this.LastEvent != -1))
+		if((this.LastEvent != -1)){
+			System.out.println("Resp: time = "+(int)(now-this.LastEvent));
 			ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
+		}
 		this.LastEvent = now;
 		
 		//System.out.println("New Watcher Data: "+  children.toString());
