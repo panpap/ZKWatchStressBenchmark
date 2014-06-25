@@ -99,11 +99,12 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
 		stresser = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
 		stresser.setPriority(Thread.MAX_PRIORITY);
 		stresser.start();
+		System.out.println("Stresser Started!");
 	} catch (IOException e) {
 		System.out.println("ZK currator error "+ e);
 	}
 	
-	System.out.println("Stresser Done!");
+	
     
     
     
