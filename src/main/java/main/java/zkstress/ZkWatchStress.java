@@ -73,8 +73,13 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     
     if(this.LoadBalance){
     	//for Load balanced
-    	for(int i=0; i<(ThreadNo/3); i++){	
-            executorPool.execute(new Executor("10.254.1.2", this.Znode));
+    	for(int i=0; i<(ThreadNo/3); i++){
+    		
+    		Executor tmp = new Executor("10.254.1.2", this.Znode);
+            executorPool.execute(tmp);
+            if(i ==1 ){
+            	ChildrenMonitor.myID = tmp.chm.hashCode();
+        	}
             executorPool.execute(new Executor("10.254.1.4", this.Znode));
             executorPool.execute(new Executor("10.254.1.5", this.Znode));
     	}
@@ -84,7 +89,13 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     else{
     	//submit work to the thread pool Not Balanced
         for(int i=0; i<this.ThreadNo; i++){
-            executorPool.execute(new Executor(this.ZkServer, this.Znode));
+        	
+        	Executor tmp = new Executor(this.ZkServer, this.Znode);
+            executorPool.execute(tmp);
+            
+            if(i ==1 ){
+            	ChildrenMonitor.myID = tmp.chm.hashCode();;
+        	}
         }
     }
     
