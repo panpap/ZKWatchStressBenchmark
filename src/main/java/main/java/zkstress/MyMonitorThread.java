@@ -26,7 +26,7 @@ public class MyMonitorThread implements Runnable
     {
         while(run){
                 System.out.println(
-                    String.format("\n[monitor] [%d/%d] Active: %d, Completed: %d, Task: %d, isShutdown: %s, isTerminated: %s",
+                    String.format("[monitor] [%d/%d] Active: %d, Completed: %d, Task: %d, isShutdown: %s, isTerminated: %s",
                         this.executor.getPoolSize(),
                         this.executor.getCorePoolSize(),
                         this.executor.getActiveCount(),

@@ -20,7 +20,7 @@ public abstract class BenchmarkClient implements Runnable {
 	protected CuratorFramework _client; // the actual client
 	protected String _path;
 	protected int _id;
-	protected long _count;
+	protected int _count;
 	protected int _countTime;
 	protected int _time;
 	protected int _highestN;
@@ -72,7 +72,7 @@ public abstract class BenchmarkClient implements Runnable {
 			System.out.println("Could not delete Children");
 		}
 		
-		System.out.println("Zk -> Write CLient Done!");
+		System.out.println("Zk CLient Done!");
 		ZkWatchStress.done = true;
 		ZkWatchStress.executorPool.shutdownNow();
 		return;
@@ -100,7 +100,7 @@ public abstract class BenchmarkClient implements Runnable {
 		return _countTime;
 	}
 	
-	long getOpsCount(){
+	int getOpsCount(){
 		return _count;
 	}
 	

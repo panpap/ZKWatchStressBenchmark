@@ -36,14 +36,6 @@ public static int opcount;
 public static ThreadPoolExecutor executorPool;
 private static final Object lock = new Object();
 private boolean LoadBalance;
-private static Thread stresser =null;
-
-private static String ZKServ;
-private static int time;
-
-public static boolean Stressstarted =false;
-
-
 
 
 public ZkWatchStress(String ip,String node, int threads, int time, boolean lb){
@@ -66,21 +58,16 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
 				TimeUnit.SECONDS, new  LinkedBlockingQueue<Runnable>(),
 				threadFactory, rejectionHandler);
     //start the monitoring thread
-    
+   /* 
     MyMonitorThread monitor = new MyMonitorThread(executorPool, 3);
     Thread monitorThread = new Thread(monitor);
-    monitorThread.start();
+    monitorThread.start();*/
     
     
     if(this.LoadBalance){
     	//for Load balanced
-    	for(int i=0; i<(ThreadNo/3); i++){
-    		
-    		Executor tmp = new Executor("10.254.1.2", this.Znode);
-            executorPool.execute(tmp);
-            if(i ==1 ){
-            	ChildrenMonitor.myID = tmp.chm.hashCode();
-        	}
+    	for(int i=0; i<(ThreadNo/3); i++){	
+            executorPool.execute(new Executor("10.254.1.2", this.Znode));
             executorPool.execute(new Executor("10.254.1.4", this.Znode));
             executorPool.execute(new Executor("10.254.1.5", this.Znode));
     	}
@@ -90,57 +77,27 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
     else{
     	//submit work to the thread pool Not Balanced
         for(int i=0; i<this.ThreadNo; i++){
-        	
-        	Executor tmp = new Executor(this.ZkServer, this.Znode);
-            executorPool.execute(tmp);
-            
-            if(i ==1 ){
-            	ChildrenMonitor.myID = tmp.chm.hashCode();;
-        	}
+            executorPool.execute(new Executor(this.ZkServer, this.Znode));
         }
     }
     
-    System.out.println("All Watch Threads Started!");
-    
-    /*
-	 * Start Stresser!!!
-	 */
-	
-	
-	try {
-		stresser = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
-		stresser.setPriority(Thread.MAX_PRIORITY);
-		stresser.start();
-		Stressstarted = true;
-		System.out.println("Stresser Started!");
-	} catch (IOException e) {
-		System.out.println("ZK currator error "+ e);
-	}
-	
-	
     
     
     
-    
-    
-    SyncBenchmarkClient.StartTime = System.currentTimeMillis();
-    
+    System.out.println("All Threads Started!");
     
     StartTime = System.currentTimeMillis();
-    
     while ( (((System.currentTimeMillis() - StartTime)/1000) < TotalTime) && !done ){
-    	//Thread.sleep(100); 
-    	
+    	//Thread.sleep(1000); 
     }
     //shut down the pool
     
     executorPool.shutdown();
     //shut down the monitor thread
     //Thread.sleep(2000);
-    monitor.shutdown();
+    //monitor.shutdown();
 
-    System.out.println("Finished all Watch - threads");
-    this.done= true;
+    System.out.println("Finished all threads");
     return;
 
 }
@@ -161,7 +118,7 @@ public class RejectedExecutionHandlerImpl implements RejectedExecutionHandler {
  * loaded from conf.
  * @throws IOException Either failed to write to output stream or failed to close it.
  */
-private static synchronized void exportMeasurements()
+private static void exportMeasurements()
 		throws IOException
 {
 	MeasurementsExporter exporter = null;
@@ -228,11 +185,10 @@ public static void main(String [] args ){
 	Namespace res =parser.parseArgsOrFail(args); 
 	System.out.println("Starting ACaZoo Stresser...");
 	
-	ZKServ = res.getString("host");
+	String ZKServ = res.getString("host");
 	int threads = Integer.parseInt(res.getString("threads"));
-	time = Integer.parseInt(res.getString("time"));
+	int time = Integer.parseInt(res.getString("time"));
 	boolean gotlb = res.getBoolean("LB");
-	
 	
 	/*
 	 * Now Start Watcher
@@ -242,9 +198,17 @@ public static void main(String [] args ){
 	ZkWatchStress myStres = new ZkWatchStress(ZKServ,root, threads,time, gotlb);
 	
 	/*
-	 * First Start Watchers and then Stresser!!!!!!
+	 * First Start Stresser and then Watchers
 	 * 
 	 */
+	
+	try {
+		Thread tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
+		tmp.setPriority(Thread.MAX_PRIORITY);
+		tmp.start();
+	} catch (IOException e) {
+		System.out.println("ZK currator error "+ e);
+	}
 	
 	try {
 		myStres.RunAll();
@@ -255,23 +219,8 @@ public static void main(String [] args ){
 	} catch(InterruptedException e){
 		System.out.println("InterruptedException - thread - Sleep!");
 	}
-	System.out.println("Watcher Threads Done! ");
+	System.out.println("Watcher Threads done! ");
 
-	
-	
-	/*
-	 * Force shutdown!
-	 */
-	stresser.stop();
-	executorPool.shutdown();
-	
-	try {
-		Thread.sleep(2000);
-	} catch (InterruptedException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	}
-	
 	try
 	{
 		synchronized(lock){

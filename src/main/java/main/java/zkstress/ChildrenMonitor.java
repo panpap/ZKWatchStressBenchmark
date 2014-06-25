@@ -31,10 +31,9 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 
     List<String> prevData;
     
-    public static long myID;
     
-    
-    public ChildrenMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher, ChildrenMonitorListener listener) throws KeeperException, InterruptedException {
+    public ChildrenMonitor(ZooKeeper zk, String znode, Watcher chainedWatcher,
+    		ChildrenMonitorListener listener) throws KeeperException, InterruptedException {
         this.zk = zk;
         this.znode = znode;
         this.chainedWatcher = chainedWatcher;
@@ -42,7 +41,6 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
         this.LastEvent = -1;
         // Get things started by checking if the node exists. We are going
         // to be completely event driven
-        
         zk.getChildren(znode, true, this, null);
     }
 
@@ -66,7 +64,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 
     public void process(WatchedEvent event) {
         String path = event.getPath();
-        //System.out.println("Event Type: " + event.getType()  + " Path: "+ path  + "State: "+ event.getState() + "ZK State: "+ zk.getState());
+        //System.out.println("Event Type: " + event.getType()  + " Path: "+ path  + "State: "+ event.getState());
         if (event.getType() == Event.EventType.None) {
             // We are are being told that the state of the
             // connection has changed
@@ -100,26 +98,19 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
     }
 
 	@Override
-	public void processResult(int rc, String path, Object ctx, List<String> children) {
-		
+	public void processResult(int rc, String path, Object ctx,
+			List<String> children) {
 		
 		/* Do NOT continue Writing after shutdown!!!! */
 		if(ZkWatchStress.executorPool.isTerminating() || ZkWatchStress.executorPool.isTerminated()){
-			try {
-				zk.close();
-			} catch (InterruptedException e) {
-				System.out.println("Unable to close ZK connection!");
-			}
 			Thread.currentThread().stop();
 			return;
 		}
 		/*Just to Check Progress */
 		System.out.print(".");
 		long now = System.currentTimeMillis();
-		if((this.LastEvent != -1) && (myID == this.hashCode()) && (ZkWatchStress.Stressstarted)){
-			System.out.println("Resp: time = "+(int)(now-this.LastEvent));
+		if((this.LastEvent != -1))
 			ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
-		}
 		this.LastEvent = now;
 		
 		//System.out.println("New Watcher Data: "+  children.toString());
@@ -151,9 +142,8 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
             } catch (Exception e) {
                 // We don't need to worry about recovering now. The watch
                 // callbacks will kick off any exception handling
-               // e.printStackTrace();
-                System.out.println("Zk - Watch Connection error!");
-            	return;
+                e.printStackTrace();
+                return;
             }
         }
         if ((b == null && b != prevData)
