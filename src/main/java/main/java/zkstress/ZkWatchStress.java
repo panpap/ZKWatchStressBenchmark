@@ -36,6 +36,13 @@ public static int opcount;
 public static ThreadPoolExecutor executorPool;
 private static final Object lock = new Object();
 private boolean LoadBalance;
+private static Thread stresser =null;
+
+private static String ZKServ;
+private static int time;
+
+
+
 
 
 public ZkWatchStress(String ip,String node, int threads, int time, boolean lb){
@@ -81,10 +88,27 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
         }
     }
     
+    System.out.println("All Watch Threads Started!");
+    
+    /*
+	 * Start Stresser!!!
+	 */
+	
+	
+	try {
+		stresser = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
+		stresser.setPriority(Thread.MAX_PRIORITY);
+		stresser.start();
+	} catch (IOException e) {
+		System.out.println("ZK currator error "+ e);
+	}
+	
+	System.out.println("Stresser Done!");
     
     
     
-    System.out.println("All Threads Started!");
+    
+    
     SyncBenchmarkClient.StartTime = System.currentTimeMillis();
     
     
@@ -190,9 +214,9 @@ public static void main(String [] args ){
 	Namespace res =parser.parseArgsOrFail(args); 
 	System.out.println("Starting ACaZoo Stresser...");
 	
-	String ZKServ = res.getString("host");
+	ZKServ = res.getString("host");
 	int threads = Integer.parseInt(res.getString("threads"));
-	int time = Integer.parseInt(res.getString("time"));
+	time = Integer.parseInt(res.getString("time"));
 	boolean gotlb = res.getBoolean("LB");
 	
 	
@@ -217,27 +241,14 @@ public static void main(String [] args ){
 	} catch(InterruptedException e){
 		System.out.println("InterruptedException - thread - Sleep!");
 	}
-	System.out.println("Watcher Threads Started! ");
+	System.out.println("Watcher Threads Done! ");
 
-	/*
-	 * Start Stresser!!!
-	 */
 	
-	Thread tmp =null;
-	try {
-		 tmp = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
-		tmp.setPriority(Thread.MAX_PRIORITY);
-		tmp.start();
-	} catch (IOException e) {
-		System.out.println("ZK currator error "+ e);
-	}
-	
-	System.out.println("Stresser Done!");
 	
 	/*
 	 * Force shutdown!
 	 */
-	tmp.stop();
+	stresser.stop();
 	executorPool.shutdown();
 	
 	try {
