@@ -116,7 +116,7 @@ public class ChildrenMonitor implements Watcher, AsyncCallback.ChildrenCallback 
 		/*Just to Check Progress */
 		System.out.print(".");
 		long now = System.currentTimeMillis();
-		if((this.LastEvent != -1) && myID == this.hashCode()){
+		if((this.LastEvent != -1) && (myID == this.hashCode()) && (ZkWatchStress.Stressstarted)){
 			System.out.println("Resp: time = "+(int)(now-this.LastEvent));
 			ZkWatchStress._measurements.measure("RespTime", (int)(now-this.LastEvent));
 		}

@@ -41,6 +41,7 @@ private static Thread stresser =null;
 private static String ZKServ;
 private static int time;
 
+public static boolean Stressstarted =false;
 
 
 
@@ -110,6 +111,7 @@ public void RunAll() throws KeeperException, IOException, InterruptedException{
 		stresser = new Thread(new SyncBenchmarkClient(ZKServ, "/zkTest", time, 750));
 		stresser.setPriority(Thread.MAX_PRIORITY);
 		stresser.start();
+		Stressstarted = true;
 		System.out.println("Stresser Started!");
 	} catch (IOException e) {
 		System.out.println("ZK currator error "+ e);
